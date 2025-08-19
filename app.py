@@ -1,58 +1,125 @@
 import streamlit as st
 import random
 
-# Electron configurations for elements 1–50
-elements = {
-    1: "1s1", 2: "1s2", 3: "1s2 2s1", 4: "1s2 2s2", 5: "1s2 2s2 2p1",
-    6: "1s2 2s2 2p2", 7: "1s2 2s2 2p3", 8: "1s2 2s2 2p4", 9: "1s2 2s2 2p5", 10: "1s2 2s2 2p6",
-    11: "1s2 2s2 2p6 3s1", 12: "1s2 2s2 2p6 3s2", 13: "1s2 2s2 2p6 3s2 3p1", 14: "1s2 2s2 2p6 3s2 3p2",
-    15: "1s2 2s2 2p6 3s2 3p3", 16: "1s2 2s2 2p6 3s2 3p4", 17: "1s2 2s2 2p6 3s2 3p5", 18: "1s2 2s2 2p6 3s2 3p6",
-    19: "1s2 2s2 2p6 3s2 3p6 4s1", 20: "1s2 2s2 2p6 3s2 3p6 4s2",
-    21: "1s2 2s2 2p6 3s2 3p6 4s2 3d1", 22: "1s2 2s2 2p6 3s2 3p6 4s2 3d2",
-    23: "1s2 2s2 2p6 3s2 3p6 4s2 3d3", 24: "1s2 2s2 2p6 3s2 3p6 4s2 3d5",
-    25: "1s2 2s2 2p6 3s2 3p6 4s2 3d5", 26: "1s2 2s2 2p6 3s2 3p6 4s2 3d6",
-    27: "1s2 2s2 2p6 3s2 3p6 4s2 3d7", 28: "1s2 2s2 2p6 3s2 3p6 4s2 3d8",
-    29: "1s2 2s2 2p6 3s2 3p6 4s1 3d10", 30: "1s2 2s2 2p6 3s2 3p6 4s2",
-    31: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p1", 32: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p2",
-    33: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p3", 34: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p4",
-    35: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p5", 36: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6",
-    37: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s1", 38: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2",
-    39: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d1", 40: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d2",
-    41: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d3", 42: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d4",
-    43: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d5", 44: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s1 4d7",
-    45: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d7", 46: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d8",
-    47: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s1 4d10", 48: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10",
-    49: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5p1", 50: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5p2"
+# --- Element Info Sidebar ---
+element_names = {
+    20: "Calcium", 21: "Scandium", 22: "Titanium", 23: "Vanadium", 24: "Chromium",
+    25: "Manganese", 26: "Iron", 27: "Cobalt", 28: "Nickel", 29: "Copper", 30: "Zinc",
+    31: "Gallium", 32: "Germanium", 33: "Arsenic", 34: "Selenium", 35: "Bromine",
+    36: "Krypton", 37: "Rubidium", 38: "Strontium", 39: "Yttrium", 40: "Zirconium",
+    41: "Niobium", 42: "Molybdenum", 43: "Technetium", 44: "Ruthenium", 45: "Rhodium",
+    46: "Palladium", 47: "Silver", 48: "Cadmium", 49: "Indium", 50: "Tin"
 }
 
-# Initialize session state
-if "score" not in st.session_state:
-    st.session_state.score = 0
-if "current_element" not in st.session_state:
-    st.session_state.current_element = random.randint(1, 50)
+# --- Electron Orbitals Order ---
+orbitals_order = [
+    {"name": "1s", "max": 2}, {"name": "2s", "max": 2}, {"name": "2p", "max": 6},
+    {"name": "3s", "max": 2}, {"name": "3p", "max": 6}, {"name": "4s", "max": 2},
+    {"name": "3d", "max": 10}, {"name": "4p", "max": 6}, {"name": "5s", "max": 2},
+    {"name": "4d", "max": 10}, {"name": "5p", "max": 6}
+]
 
-st.title("Electron Configuration Game (Elements 1–50)")
+# --- Special Exceptions for Aufbau ---
+exceptions = {
+    24: {"3d": 5, "4s": 1},   # Chromium
+    29: {"3d": 10, "4s": 1},  # Copper
+    42: {"4d": 5, "5s": 1},   # Molybdenum
+    47: {"4d": 10, "5s": 1},  # Silver
+    41: {"4d": 4, "5s": 1},   # Niobium
+    43: {"4d": 5, "5s": 2},   # Technetium
+}
 
-st.write(f"**Element to configure:** Atomic Number {st.session_state.current_element}")
+# --- Initialize session state ---
+if "current" not in st.session_state:
+    st.session_state.current = random.randint(20, 50)
+if "text_input" not in st.session_state:
+    st.session_state.text_input = ""
+if "visual_state" not in st.session_state:
+    st.session_state.visual_state = {}
 
-# Student input
-user_input = st.text_input("Write the electron configuration (spdf notation)")
+st.title("Electron Configuration Game (Atomic numbers 20–50)")
 
-# Check answer
-if st.button("Check Answer"):
-    correct_config = elements[st.session_state.current_element]
-    # Normalize input: remove spaces for comparison
-    if user_input.replace(" ", "") == correct_config.replace(" ", ""):
-        st.success("✅ Correct!")
-        st.session_state.score += 1
+# Sidebar Element Info
+atomic_number = st.sidebar.slider("Select Atomic Number", 20, 50, st.session_state.current)
+st.sidebar.write(f"Element: **{element_names[atomic_number]}**")
+st.sidebar.write(f"Atomic Number: **{atomic_number}**")
+
+# Update session_state when slider changes
+if atomic_number != st.session_state.current:
+    st.session_state.current = atomic_number
+    st.session_state.visual_state = {}
+    st.session_state.text_input = ""
+
+# --- Generate correct electron configuration ---
+def get_correct_config(Z):
+    config = {}
+    remaining = Z
+    for orb in orbitals_order:
+        name = orb["name"]
+        if remaining <= 0:
+            config[name] = 0
+        else:
+            electrons = min(orb["max"], remaining)
+            config[name] = electrons
+            remaining -= electrons
+    # Apply exceptions
+    if Z in exceptions:
+        for k, v in exceptions[Z].items():
+            config[k] = v
+    return config
+
+correct_config = get_correct_config(st.session_state.current)
+
+# --- Display visual electron input ---
+st.subheader("Enter your electron configuration")
+visual_inputs = {}
+cols = st.columns(len(orbitals_order))
+for i, orb in enumerate(orbitals_order):
+    visual_inputs[orb["name"]] = cols[i].number_input(
+        orb["name"], min_value=0, max_value=orb["max"], value=st.session_state.visual_state.get(orb["name"], 0), step=1
+    )
+st.session_state.visual_state = visual_inputs
+
+# --- Text input alternative ---
+text_input = st.text_input("Or enter configuration (e.g., 1s2 2s2 2p6 ...)", value=st.session_state.text_input)
+st.session_state.text_input = text_input
+
+# --- Check Answer ---
+def check_answer():
+    user_config = {}
+    if st.session_state.text_input.strip():
+        # parse text input
+        try:
+            parts = st.session_state.text_input.strip().split()
+            for p in parts:
+                orb = ''.join(filter(str.isalpha, p))
+                e = int(''.join(filter(str.isdigit, p)))
+                user_config[orb] = e
+        except:
+            st.error("Invalid text format. Use e.g., 1s2 2s2 2p6")
+            return False
     else:
-        st.error(f"❌ Incorrect! Correct configuration: {correct_config}")
-    
-    # Pick a new random element
-    st.session_state.current_element = random.randint(1, 50)
+        user_config = st.session_state.visual_state
 
-st.write(f"Score: {st.session_state.score}")
+    # Compare
+    for orb in orbitals_order:
+        name = orb["name"]
+        if user_config.get(name, 0) != correct_config.get(name, 0):
+            st.warning("Incorrect, try again!")
+            return False
 
-# Optional: Show hint table
-with st.expander("Orbital Capacities Hint"):
-    st.write("s = 2 electrons, p = 6 electrons, d = 10 electrons, f = 14 electrons")
+    st.success("Correct!")
+    return True
+
+if st.button("Check Answer"):
+    if check_answer():
+        # Automatically show next element
+        st.session_state.current = random.randint(20, 50)
+        st.session_state.visual_state = {}
+        st.session_state.text_input = ""
+
+# --- Optional: display correct answer ---
+if st.checkbox("Show correct configuration"):
+    correct_str = ' '.join(f"{k}{v}" for k, v in correct_config.items() if v > 0)
+    st.info(correct_str)
+
